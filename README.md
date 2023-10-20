@@ -5,4 +5,27 @@ Here you will find information on various homework assignments, along with the n
 
 ## Contact: robert-mihai.gheorghe@s.unibuc.ro
 
-### Homework 1: TBA
+### Homework 1:
+<details>
+<summary></summary>
+  
+### Components
+1. <span style="color:red;">R</span><span style="color:green;">G</span><span style="color:blue;">B</span> led (1+)
+2. Potentiometers (3+)
+3. Resistors
+4. Wires
+
+### Task
+Control each channel of an <span style="color:red;">R</span><span style="color:green;">G</span><span style="color:blue;">B</span> led using a separate potentiometer. The intensity must be controlled through software, using Arduino. (i.e read the values from the potentiometer and send analog signals to the LED)
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](./homework1/setup1.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=D3T7p-lxy4M)
+### [Source code](./homework1/homework1.ino)
+
+</details>
