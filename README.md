@@ -22,7 +22,7 @@ Control each channel of an ${\color{red}R}{\color{green}G}{\color{blue}B}$ led u
 <details>
 <summary></summary>
 
-![Setup](./homework1/setup1.jpg)
+![Setup](./tree/main/homework1/setup1.jpg)
 </details>
 
 ### [Demo](https://www.youtube.com/watch?v=D3T7p-lxy4M)
