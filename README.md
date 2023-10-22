@@ -10,13 +10,13 @@ Here you will find information on various homework assignments, along with the n
 <summary></summary>
   
 ### Components
-1. <span style="color:red;">R</span><span style="color:green;">G</span><span style="color:blue;">B</span> led (1+)
+1. ${\color{red}R}{\color{green}G}{\color{blue}B}$ led (1+)
 2. Potentiometers (3+)
 3. Resistors
 4. Wires
 
 ### Task
-Control each channel of an <span style="color:red;">R</span><span style="color:green;">G</span><span style="color:blue;">B</span> led using a separate potentiometer. The intensity must be controlled through software, using Arduino. (i.e read the values from the potentiometer and send analog signals to the LED)
+Control each channel of an ${\color{red}R}{\color{green}G}{\color{blue}B}$ led using a separate potentiometer. The intensity must be controlled through software, using Arduino. (i.e read the values from the potentiometer and send analog signals to the LED)
 
 ### Setup
 <details>
