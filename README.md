@@ -29,3 +29,28 @@ Control each channel of an ${\color{red}R}{\color{green}G}{\color{blue}B}$ led u
 ### [Source code](./homework1/homework1.ino)
 
 </details>
+
+### Homework 2:
+<details>
+<summary></summary>
+  
+### Components
+1. LEDs (4+)
+2. Buttons (3+)
+3. Buzzer (1)
+4. Wires and Resistors
+
+### Task
+Simulate a working elevator using buttons and LEDs. Each pair LED-button is associated with a floor, starting from 0. When pressing a button, the buzzer with emit a sound depicting that the elevator _is going up or down_, and the extra LED will blink until the destination is reached. When the elevator _is going up or down_, the LED of each floor will be lit for a small amount of time, depicting that _the elevator is currently at that floor_, and then proceed to the next floor, when the last LED will turn off, for the present LED to light up.
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework2/setup2.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=vNgpdu8ZGWU)
+### [Source code](./homework2/homework2.ino)
+
+</details>
