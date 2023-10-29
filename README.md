@@ -50,7 +50,7 @@ Simulate a working elevator using buttons and LEDs. Each pair LED-button is asso
 ![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework2/setup2.jpg)
 </details>
 
-### [Demo](https://www.youtube.com/watch?v=vNgpdu8ZGWU)
+### [Demo](https://www.youtube.com/watch?v=kEbVnQoMF-4)
 ### [Source code](./homework2/homework2.ino)
 
 </details>

@@ -13,12 +13,12 @@ const unsigned long scheduleFloorDelay = 1000;
 Queue<unsigned int> scheduledQueries;
 unsigned int currentFloor, destinationFloor, lastDebounceTime;
 byte finishedQuery;
+byte startedProgram = true;
 int currentQuery = -1;
 unsigned long timeDelayScheduling = -1;
 unsigned int floorCount;
 
 void finishQuery(){
-  digitalWrite(floorLedPin[currentFloor], LOW);
   digitalWrite(blinkingLedPin, LOW);
   scheduledQueries.pop();
   currentQuery = -1;
@@ -96,6 +96,8 @@ void setup() {
 }
 
 void loop() {
+  if(startedProgram)
+    digitalWrite(floorLedPin[0], HIGH);
   for(unsigned int i=0;i<sizeof(floorButtonPin) / sizeof(floorButtonPin[0]);i++)
     floorButtonState[i] = digitalRead(floorButtonPin[i]);
   for(unsigned int i=0;i<sizeof(floorButtonPin) / sizeof(floorButtonPin[0]);i++){
@@ -105,8 +107,10 @@ void loop() {
     if(millis() - lastDebounceTime > debounceDelay)
       if(floorButtonState[i] != debounceButtonState[i]){
         debounceButtonState[i] = floorButtonState[i];
-        if(debounceButtonState[i] == LOW)
+        if(debounceButtonState[i] == LOW){
           scheduledQueries.push(i);
+          startedProgram = false;
+        }
       }
     lastButtonState[i] = floorButtonState[i];
   }
