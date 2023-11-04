@@ -55,7 +55,7 @@ Simulate a working elevator using buttons and LEDs. Each pair LED-button is asso
 
 </details>
 
-### Homework 2:
+### Homework 3:
 <details>
 <summary></summary>
   
