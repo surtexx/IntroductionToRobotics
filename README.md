@@ -54,3 +54,27 @@ Simulate a working elevator using buttons and LEDs. Each pair LED-button is asso
 ### [Source code](./homework2/homework2.ino)
 
 </details>
+
+### Homework 2:
+<details>
+<summary></summary>
+  
+### Components
+1. 7 segment display (1)
+2. Joystick (1)
+3. Wires and Resistors
+
+### Task
+Using the joystick, control the 7 segment display. Starting from the decimal point (DP), there are 4 possible directions: up, down, left, right. Each direction will select the neighbour segment, making it blink. If the joystick button is pressed, the current segment will stay lit (will keep blinking if selected). There can be more segments lit at once, and they also can be turned off. If the joystick button is held for more than 3 seconds, all the segments will be turned off, and the DP will be selected. (starting position)
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework3/setup3.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=8gTAwDh5y10)
+### [Source code](./homework3/homework3.ino)
+
+</details>
