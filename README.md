@@ -55,7 +55,7 @@ Simulate a working elevator using buttons and LEDs. Each pair LED-button is asso
 
 </details>
 
-### Homework 2:
+### Homework 3:
 <details>
 <summary></summary>
   
@@ -71,7 +71,7 @@ Using the joystick, control the 7 segment display. Starting from the decimal poi
 <details>
 <summary></summary>
 
-![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework3/setup3.jpg)
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework3/setup3.png)
 </details>
 
 ### [Demo](https://www.youtube.com/watch?v=8gTAwDh5y10)
