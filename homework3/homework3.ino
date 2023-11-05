@@ -22,16 +22,16 @@ const unsigned int pinDP = 4;
 const unsigned int segSize = 8;
 
 const unsigned int rightNeighbour[segSize] = {
-  1, 7, 7, 2, 2, 1, 2, 2
+  1, 1, 7, 2, 2, 1, 6, 7
 };
 const unsigned int leftNeighbour[segSize] = {
-  5, 5, 4, 4, 4, 5, 4, 2
+  5, 5, 4, 4, 4, 5, 6, 2
 };
 const unsigned int upperNeighbour[segSize] = {
-  0, 0, 6, 6, 6, 0, 0, 2
+  0, 0, 6, 6, 6, 0, 0, 7
 };
 const unsigned int lowerNeighbour[segSize] = {
-  6, 6, 3, 3, 3, 6, 3, 2
+  6, 6, 3, 3, 3, 6, 3, 7
 };
 
 const unsigned int segments[segSize] = { 
