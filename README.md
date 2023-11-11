@@ -96,7 +96,7 @@ Implement a timer that has capabilities of saving laps. The timer starts from 00
 <details>
 <summary></summary>
 
-![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework4/setup4.png)
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework4/setup4.jpg)
 </details>
 
 ### [Demo](https://www.youtube.com/watch?v=T57Q6Mao5Qg)
