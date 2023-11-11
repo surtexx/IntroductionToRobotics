@@ -78,3 +78,28 @@ Using the joystick, control the 7 segment display. Starting from the decimal poi
 ### [Source code](./homework3/homework3.ino)
 
 </details>
+
+### Homework 4:
+<details>
+<summary></summary>
+  
+### Components
+1. 4 digits 7 segment display (1)
+2. Joystick (1)
+3. Buttons (2)
+4. Wires and Resistors
+
+### Task
+Implement a timer that has capabilities of saving laps. The timer starts from 000.0, and can be started, paused, and reset. It can be started or paused by pressing the start button (left of the joystick). Reset is done by pressing the reset button (right of the joystick) when it is in pause mode, removing all saved laps. The timer can save laps by pressing the joystick button. The joystick can be used in pause mode to cycle between saved laps and current time. Pressing the joystick button will clear all the laps and restore the timer to the time when it was paused.
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework4/setup4.png)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=T57Q6Mao5Qg)
+### [Source code](./homework4/homework4.ino)
+
+</details>
