@@ -55,7 +55,7 @@ byte resetButtonLastState = HIGH;
 byte resetButtonDebounceState = HIGH;
 
 // Variables for timekeeping and flow control
-unsigned long lastDebounceTime;
+unsigned long lastDebounceTime, lastDebounceTimeJoystick;
 unsigned long debounceDelay = 50;
 unsigned int xValue;
 unsigned int milliseconds = 0;
@@ -63,7 +63,6 @@ unsigned int seconds = 0;
 unsigned int currentLapIndex = 1;
 const unsigned int lapCount = 4;
 bool started = false;
-bool modifiedLap = false;
 int lapTimes[lapCount + 1];
 
 
@@ -134,14 +133,15 @@ void debounceStartPauseTimer()
     }
 }
 
+// Cycle through laps using a debouncing algorithm for holding the joystick to the side
 void cycleThroughLaps()
 {
   xValue = analogRead(joystickXPin);
   if (xValue >= 600)
   {
-    if (!modifiedLap)
+    if (millis() / 500 != lastDebounceTimeJoystick)
     {
-      modifiedLap = true;
+      lastDebounceTimeJoystick = millis() / 500;
       currentLapIndex = (currentLapIndex + 1) % (lapCount + 1);
       if (lapTimes[currentLapIndex] == -1)
         currentLapIndex = 0;
@@ -152,9 +152,9 @@ void cycleThroughLaps()
   }
   else if (xValue <= 400)
   {
-    if (!modifiedLap)
+    if (millis() / 500 != lastDebounceTimeJoystick)
     {
-      modifiedLap = true;
+      lastDebounceTimeJoystick = millis() / 500;
       currentLapIndex = (currentLapIndex + lapCount) % (lapCount + 1);
       while (lapTimes[currentLapIndex] == -1 && currentLapIndex != 0)
         currentLapIndex = (currentLapIndex + lapCount) % (lapCount + 1);
@@ -172,8 +172,8 @@ void cycleThroughLaps()
       }
     }
   }
-  else
-    modifiedLap = false;
+  // else
+    // modifiedLap = false;
 }
 
 // Read the state of the reset button using a debouncing algorithm
