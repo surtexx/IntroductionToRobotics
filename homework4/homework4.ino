@@ -62,6 +62,7 @@ unsigned int milliseconds = 0;
 unsigned int seconds = 0;
 unsigned int currentLapIndex = 1;
 const unsigned int lapCount = 4;
+const unsigned int debounceDelayJoystick = 500;
 bool started = false;
 int lapTimes[lapCount + 1];
 
@@ -139,9 +140,9 @@ void cycleThroughLaps()
   xValue = analogRead(joystickXPin);
   if (xValue >= 600)
   {
-    if (millis() / 500 != lastDebounceTimeJoystick)
+    if (millis() / debounceDelayJoystick != lastDebounceTimeJoystick)
     {
-      lastDebounceTimeJoystick = millis() / 500;
+      lastDebounceTimeJoystick = millis() / debounceDelayJoystick;
       currentLapIndex = (currentLapIndex + 1) % (lapCount + 1);
       if (lapTimes[currentLapIndex] == -1)
         currentLapIndex = 0;
@@ -152,9 +153,9 @@ void cycleThroughLaps()
   }
   else if (xValue <= 400)
   {
-    if (millis() / 500 != lastDebounceTimeJoystick)
+    if (millis() / debounceDelayJoystick != lastDebounceTimeJoystick)
     {
-      lastDebounceTimeJoystick = millis() / 500;
+      lastDebounceTimeJoystick = millis() / debounceDelayJoystick;
       currentLapIndex = (currentLapIndex + lapCount) % (lapCount + 1);
       while (lapTimes[currentLapIndex] == -1 && currentLapIndex != 0)
         currentLapIndex = (currentLapIndex + lapCount) % (lapCount + 1);
