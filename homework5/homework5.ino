@@ -15,7 +15,7 @@ unsigned int distance;
 unsigned int option;
 bool valueRead, optionCompleted, completedSetUltrasonicSamplingRate, completedSetLdrSamplingRate,
     printedTextUltrasonicSamplingRate, printedTextSetLdrSamplingRate, printedTextUltrasonicAlertThreeshold,
-    printedTextLdrAlertThreeshold, printedTextManualColorControl, alert;
+    printedTextLdrAlertThreeshold, printedTextManualColorControl, ldrAlert, ultrasonicAlert;
 
 // Initialize variables for menus
 unsigned int currentSubmenu; // initialized with 0, meaning the main menu
@@ -371,12 +371,8 @@ void sensorsRead()
                 ultrasonicRead();
             if (autoMode)
             {
-                if(ldrValue < ldrAlertThreeshold || distance < ultrasonicAlertThreeshold)
-                    bool alert = true;
-                else
-                    bool alert = false;
-                analogWrite(redPin, 255*(int)alert);
-                analogWrite(greenPin, 255*(int)!alert);
+                analogWrite(redPin, 255 * (ldrAlert || ultrasonicAlert));
+                analogWrite(greenPin, 255 * !(ldrAlert || ultrasonicAlert));
                 analogWrite(bluePin, 0);
             }
         }
@@ -393,7 +389,12 @@ void ldrRead()
     Serial.println(" lux");
 
     if (ldrValue < ldrAlertThreeshold)
+    {
         Serial.println("ALERT! Night is coming.");
+        ldrAlert = true;
+    }
+    else
+        ldrAlert = false;
 
     EEPROM.put(ldrReadingIndex, ldrValue);
     ldrReadingIndex += sizeof(ldrValue);
@@ -424,7 +425,12 @@ void ultrasonicRead()
     Serial.println(" cm");
 
     if (distance < ultrasonicAlertThreeshold)
+    {
         Serial.println("ALERT! Object too close.");
+        ultrasonicAlert = true;
+    }
+    else
+        ultrasonicAlert = false;
 
     EEPROM.put(ultrasonicReadingIndex, distance);
     ultrasonicReadingIndex += sizeof(distance);
@@ -476,45 +482,28 @@ void displayLoggedData()
 
 void manualColorControl()
 {
-    if(!printedTextManualColorControl){
+    if (!printedTextManualColorControl)
+    {
         // Prompt the user for RGB values
         Serial.println("Enter RGB values (0-255) separated by spaces:");
         printedTextManualColorControl = true;
     }
     else if (Serial.available())
     {
-        // Read the user input
-        String input = Serial.readStringUntil('\n');
+        // Read the RGB values from the user
+        int redValue = Serial.parseInt();
+        int greenValue = Serial.parseInt();
+        int blueValue = Serial.parseInt();
 
-        // Parse the RGB values from the input
-        int r, g, b;
-        sscanf(input.c_str(), "%d %d %d", &r, &g, &b);
-        Serial.println(input);
-        Serial.println(r);
-        Serial.println(g);
-        Serial.println(b);
-        // Validate the RGB values
-        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-        {
-            Serial.println("Invalid RGB values. Please enter values between 0 and 255.");
-            return;
-        }
+        // Write the RGB values to the LED
+        analogWrite(redPin, redValue);
+        analogWrite(greenPin, greenValue);
+        analogWrite(bluePin, blueValue);
 
-        // Set the RGB values
-        analogWrite(redPin, r);
-        analogWrite(greenPin, g);
-        analogWrite(bluePin, b);
-
-        // Print the set RGB values
-        Serial.print("RGB values set: (");
-        Serial.print(r);
-        Serial.print(", ");
-        Serial.print(g);
-        Serial.print(", ");
-        Serial.print(b);
-        Serial.println(")");
+        Serial.println("Success! RGB values set.");
 
         optionCompleted = true;
+        printedTextManualColorControl = false;
     }
 }
 
@@ -525,5 +514,11 @@ void toggleAutomatic()
     Serial.print("Automatic mode: ");
     Serial.println(autoMode ? "ON" : "OFF");
 
+    if(!autoMode)
+    {
+        analogWrite(redPin, 0);
+        analogWrite(greenPin, 0);
+        analogWrite(bluePin, 0);
+    }
     optionCompleted = true;
 }
