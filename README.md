@@ -103,3 +103,46 @@ Implement a timer that has capabilities of saving laps. The timer starts from 00
 ### [Source code](./homework4/homework4.ino)
 
 </details>
+
+### Homework 5:
+<details>
+<summary></summary>
+  
+### Components
+1. Ultrasonic Sensor HC-SR04 (1)
+2. LDR (Light-Dependent Resistor) (1)
+3. ${\color{red}R}{\color{green}G}{\color{blue}B}$ led (1)
+4. Wires and Resistors
+
+### Task
+Develop a "Smart Environment Monitor and Logger". This system requires an interactive menu (Serial monitor) from which the user can choose between multiple options listed below:
+
+1. Sensor Settings
+    1.1 Sensors Sampling Interval. (in seconds) - the interval at which the sensors will be read and logged.
+    1.2 Ultrasonic Alert Threshold. (in cm) - if the distance is smaller than the threshold, the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led will turn red, otherwise it will turn green.
+    1.3 LDR Alert Threshold. (in lux) - if the light intensity is smaller than the threshold, the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led will turn red, otherwise it will turn green.
+    1.4 Back
+2. Reset Logged Data
+    2.1 Yes
+    2.2 No
+3. System Status
+    3.1 Current Sensor Readings - display the current readings of the sensors at the interval specified in the first option of the first submenu.
+    3.2 Current Sensor Settings - display the current settings of the sensors.
+    3.3 Display Logged Data - display the logged data. (last 10 from each sensor)
+    3.4 Back
+4. ${\color{red}R}{\color{green}G}{\color{blue}B}$ LED Control
+    4.1 Manual Control - the user can manually control the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led.
+    4.2 Toggle Automatic ON/OFF - the user can toggle the automatic mode of the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led. (if it is in automatic mode, it will turn red if the distance is smaller than the threshold, and blue if the light intensity is smaller than the threshold)
+    4.3 Back
+    
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework5/setup5.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=HvrBMFZ0OWg)
+### [Source code](./homework5/homework5.ino)
+
+</details>
