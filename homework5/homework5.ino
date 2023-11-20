@@ -15,7 +15,7 @@ unsigned int distance;
 unsigned int option;
 bool valueRead, optionCompleted, completedSetUltrasonicSamplingRate, completedSetLdrSamplingRate,
     printedTextUltrasonicSamplingRate, printedTextSetLdrSamplingRate, printedTextUltrasonicAlertThreeshold,
-    printedTextLdrAlertThreeshold, printedTextManualColorControl, ldrAlert, ultrasonicAlert;
+    printedTextLdrAlertThreeshold, printedTextManualColorControl, printedTextSensorReadings, ldrAlert, ultrasonicAlert;
 
 // Initialize variables for menus
 unsigned int currentSubmenu; // initialized with 0, meaning the main menu
