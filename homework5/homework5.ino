@@ -174,7 +174,7 @@ void printMenu(unsigned int submenu)
     case 0:
         Serial.println("Choose an option (1-4): ");
         Serial.println("    1. Sensor Settings");
-        Serial.println("    2. Reset Logger Data");
+        Serial.println("    2. Reset Logged Data");
         Serial.println("    3. System Status");
         Serial.println("    4. RGB Led Control");
         break;
@@ -318,11 +318,11 @@ void setLdrAlertThreeshold()
 
 void resetLoggedData()
 {
-    Serial.println("Resetting logger data...");
-    for (int i = 0; i < 20; i++)
-        EEPROM.update(i, 0);
+    Serial.println("Resetting logged data...");
+    for (unsigned int i = 0; i < 80; i += sizeof(unsigned int))
+        EEPROM.put(i, 0U);
 
-    Serial.println("Success! Logger data reset.");
+    Serial.println("Success! Logged data reset.");
 
     currentSubmenu = 0;
     optionCompleted = true;
