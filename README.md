@@ -143,6 +143,6 @@ Develop a "Smart Environment Monitor and Logger". This system requires an intera
 </details>
 
 ### [Demo](https://www.youtube.com/watch?v=HvrBMFZ0OWg)
-### [Source code](homework5/homework5.ino)
+### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework5/homework5.ino)
 
 </details>
