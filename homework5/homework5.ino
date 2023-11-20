@@ -44,196 +44,169 @@ void loop()
 
 void chooseOption(unsigned int submenu)
 {
-    if (!submenu)
+    if (!valueRead && Serial.available())
     {
-        if (!valueRead && Serial.available())
+        option = Serial.parseInt();
+        valueRead = true;
+    }
+    else if (valueRead)
+    {
+        switch (submenu)
         {
-            option = Serial.parseInt();
-            valueRead = true;
-        }
-        else if (valueRead)
-        {
-            if (option == 1)
-            {
-                currentSubmenu = 1;
-                optionCompleted = true;
-            }
-            else if (option == 2)
-            {
-                currentSubmenu = 2;
-                optionCompleted = true;
-            }
-            else if (option == 3)
-            {
-                currentSubmenu = 3;
-                optionCompleted = true;
-            }
-            else if (option == 4)
-            {
-                currentSubmenu = 4;
-                optionCompleted = true;
-            }
-            else
-            {
+            case 0:
+                switch (option)
+                {
+                    case 1:
+                        currentSubmenu = 1;
+                        optionCompleted = true;
+                        break;
+                    case 2:
+                        currentSubmenu = 2;
+                        optionCompleted = true;
+                        break;
+                    case 3:
+                        currentSubmenu = 3;
+                        optionCompleted = true;
+                        break;
+                    case 4:
+                        currentSubmenu = 4;
+                        optionCompleted = true;
+                        break;
+                    default:
+                        Serial.println("Invalid option.");
+                        optionCompleted = true;
+                        break;
+                }
+                break;
+            case 1:
+                switch (option)
+                {
+                    case 1:
+                        setUltrasonicSamplingRate();
+                        if (completedSetUltrasonicSamplingRate)
+                            setLdrSamplingRate();
+                        break;
+                    case 2:
+                        setUltrasonicAlertThreeshold();
+                        break;
+                    case 3:
+                        setLdrAlertThreeshold();
+                        break;
+                    case 4:
+                        currentSubmenu = 0;
+                        optionCompleted = true;
+                        break;
+                    default:
+                        Serial.println("Invalid option.");
+                        optionCompleted = true;
+                        break;
+                }
+                break;
+            case 2:
+                switch (option)
+                {
+                    case 1:
+                        resetLoggedData();
+                        break;
+                    case 2:
+                        currentSubmenu = 0;
+                        optionCompleted = true;
+                        break;
+                    default:
+                        Serial.println("Invalid option.");
+                        optionCompleted = true;
+                        break;
+                }
+                break;
+            case 3:
+                switch (option)
+                {
+                    case 1:
+                        sensorsRead();
+                        break;
+                    case 2:
+                        displaySettings();
+                        break;
+                    case 3:
+                        displayLoggedData();
+                        break;
+                    case 4:
+                        currentSubmenu = 0;
+                        optionCompleted = true;
+                        break;
+                    default:
+                        Serial.println("Invalid option.");
+                        optionCompleted = true;
+                        break;
+                }
+                break;
+            case 4:
+                switch (option)
+                {
+                    case 1:
+                        manualColorControl();
+                        break;
+                    case 2:
+                        toggleAutomatic();
+                        break;
+                    case 3:
+                        currentSubmenu = 0;
+                        optionCompleted = true;
+                        break;
+                    default:
+                        Serial.println("Invalid option.");
+                        optionCompleted = true;
+                        break;
+                }
+                break;
+            default:
                 Serial.println("Invalid option.");
                 optionCompleted = true;
-            }
+                break;
         }
-    }
-    else if (submenu == 1)
-    {
-        if (!valueRead && Serial.available())
-        {
-            option = Serial.parseInt();
-            valueRead = true;
-        }
-        else if (valueRead)
-        {
-            if (option == 1)
-            {
-                setUltrasonicSamplingRate();
-                if (completedSetUltrasonicSamplingRate)
-                    setLdrSamplingRate();
-            }
-            else if (option == 2)
-                setUltrasonicAlertThreeshold();
-            else if (option == 3)
-                setLdrAlertThreeshold();
-            else if (option == 4)
-            {
-                currentSubmenu = 0;
-                optionCompleted = true;
-            }
-            else
-            {
-                Serial.println("Invalid option.");
-                optionCompleted = true;
-            }
-        }
-    }
-    else if (submenu == 2)
-    {
-        if (!valueRead && Serial.available())
-        {
-            option = Serial.parseInt();
-            valueRead = true;
-        }
-        else if (valueRead)
-        {
-            if (option == 1)
-                resetLoggedData();
-            else if (option == 2)
-            {
-                currentSubmenu = 0;
-                optionCompleted = true;
-            }
-            else
-            {
-                Serial.println("Invalid option.");
-                optionCompleted = true;
-            }
-        }
-    }
-    else if (submenu == 3)
-    {
-        if (!valueRead && Serial.available())
-        {
-            option = Serial.parseInt();
-            valueRead = true;
-        }
-        else if (valueRead)
-        {
-            if (option == 1)
-                sensorsRead();
-            else if (option == 2)
-                displaySettings();
-            else if (option == 3)
-                displayLoggedData();
-            else if (option == 4)
-            {
-                currentSubmenu = 0;
-                optionCompleted = true;
-            }
-            else
-            {
-                Serial.println("Invalid option.");
-                optionCompleted = true;
-            }
-        }
-    }
-    else if (submenu == 4)
-    {
-        if (!valueRead && Serial.available())
-        {
-            option = Serial.parseInt();
-            valueRead = true;
-        }
-        else if (valueRead)
-        {
-            if (option == 1)
-                manualColorControl();
-            else if (option == 2)
-                toggleAutomatic();
-            else if (option == 3)
-            {
-                currentSubmenu = 0;
-                optionCompleted = true;
-            }
-            else
-            {
-                Serial.println("Invalid option.");
-                optionCompleted = true;
-            }
-        }
-    }
-    else
-    {
-        Serial.println("Invalid option.");
-        optionCompleted = true;
     }
 }
 
 void printMenu(unsigned int submenu)
 {
-    if (!submenu)
+    switch (submenu)
     {
-        Serial.println("Choose an option (1-4): ");
-        Serial.println("    1. Sensor Settings");
-        Serial.println("    2. Reset Logger Data");
-        Serial.println("    3. System Status");
-        Serial.println("    4. RGB Led Control");
+        case 0:
+            Serial.println("Choose an option (1-4): ");
+            Serial.println("    1. Sensor Settings");
+            Serial.println("    2. Reset Logger Data");
+            Serial.println("    3. System Status");
+            Serial.println("    4. RGB Led Control");
+            break;
+        case 1:
+            Serial.println("Choose an option (1-4):");
+            Serial.println("    1.1 Sensors Sampling Interval");
+            Serial.println("    1.2 Ultrasonic Alert Threeshold");
+            Serial.println("    1.3 LDR Alert Threeshold");
+            Serial.println("    1.4 Back");
+            break;
+        case 2:
+            Serial.println("Are you sure? (1/2)");
+            Serial.println("    2.1 Yes.");
+            Serial.println("    2.2 No.");
+            break;
+        case 3:
+            Serial.println("Choose an option (1-4):");
+            Serial.println("    3.1 Current Sensor Readings");
+            Serial.println("    3.2 Current Sensor Settings");
+            Serial.println("    3.3 Display Logged Data");
+            Serial.println("    3.4 Back");
+            break;
+        case 4:
+            Serial.println("Choose an option (1-3):");
+            Serial.println("    4.1 Manual Color Control");
+            Serial.println("    4.2 LED: Toggle Automatic ON/OFF");
+            Serial.println("    4.3 Back");
+            break;
+        default:
+            Serial.println("Invalid option.");
+            break;
     }
-    else if (submenu == 1)
-    {
-        Serial.println("Choose an option (1-4):");
-        Serial.println("    1.1 Sensors Sampling Interval");
-        Serial.println("    1.2 Ultrasonic Alert Threeshold");
-        Serial.println("    1.3 LDR Alert Threeshold");
-        Serial.println("    1.4 Back");
-    }
-    else if (submenu == 2)
-    {
-        Serial.println("Are you sure? (1/2)");
-        Serial.println("    2.1 Yes.");
-        Serial.println("    2.2 No.");
-    }
-    else if (submenu == 3)
-    {
-        Serial.println("Choose an option (1-4):");
-        Serial.println("    3.1 Current Sensor Readings");
-        Serial.println("    3.2 Current Sensor Settings");
-        Serial.println("    3.3 Display Logged Data");
-        Serial.println("    3.4 Back");
-    }
-    else if (submenu == 4)
-    {
-        Serial.println("Choose an option (1-3):");
-        Serial.println("    4.1 Manual Color Control");
-        Serial.println("    4.2 LED: Toggle Automatic ON/OFF");
-        Serial.println("    4.3 Back");
-    }
-    else
-        Serial.println("Invalid option.");
     valueRead = false;
     optionCompleted = false;
     completedSetUltrasonicSamplingRate = false;
