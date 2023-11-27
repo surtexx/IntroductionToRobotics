@@ -27,6 +27,7 @@ const unsigned int blinkingDelay = 500;
 const unsigned int fastBlinkingDelay = 100;
 const unsigned int buttonHoldTime = 3000;
 const unsigned int resultDisplayTime = 5000;
+const unsigned int startDelay = 5000;
 
 const byte moveInterval = 125; // Timing variable to control the speed of LED movement
 unsigned long lastClicked = 0, lastDebounceTime = 0;
@@ -90,7 +91,7 @@ void loop()
     if (!started)
     {
         generateDrawing();
-        delay(5000);
+        delay(startDelay);
         started = true;
         clearDrawing();
     }
