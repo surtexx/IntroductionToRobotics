@@ -148,3 +148,29 @@ Develop a "Smart Environment Monitor and Logger". This system requires an intera
 ### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework5/homework5.ino)
 
 </details>
+
+### Homework 6:
+<details>
+<summary></summary>
+  
+### Components
+1. Joystick (1)
+2. 8x8 LED matrix (1)
+3. MAX7219 driver (1)
+4. Capacitors (2)
+5. Wires and Resistors
+
+### Task
+Develop a small game on the 8x8 matrix. The game is a *Draw from mind* game. It generates a random drawing of dots, and after 5 seconds, the user has to replicate the drawing in a clean matrix. The user can move the cursor using the joystick, and draw by pressing the joystick button. The user can submit the drawing by holding the joystick button for more than 3 seconds. The game will display the correct drawing as lit LEDs, and missing or wrong LEDs as fast-blinking LEDs. After 5 seconds, the game restarts.
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework6/setup6.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=-e_HT-BigJk)
+### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework6/homework6.ino)
+
+</details>
