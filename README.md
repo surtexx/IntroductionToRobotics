@@ -134,7 +134,9 @@ Develop a "Smart Environment Monitor and Logger". This system requires an intera
     4.1 Manual Control - the user can manually control the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led.
     4.2 Toggle Automatic ON/OFF - the user can toggle the automatic mode of the ${\color{red}R}{\color{green}G}{\color{blue}B}$ led. (if it is in automatic mode, it will turn red if the distance is smaller than the threshold, and blue if the light intensity is smaller than the threshold)
     4.3 Back
-    
+
+#### Warning: For the menu to work properly, the Serial Monitor needs to have the setting for `Line Ending` as `None`
+
 ### Setup
 <details>
 <summary></summary>
@@ -143,6 +145,6 @@ Develop a "Smart Environment Monitor and Logger". This system requires an intera
 </details>
 
 ### [Demo](https://www.youtube.com/watch?v=HvrBMFZ0OWg)
-### [Source code](./homework5/homework5.ino)
+### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework5/homework5.ino)
 
 </details>
