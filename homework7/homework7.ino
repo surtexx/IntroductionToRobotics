@@ -145,8 +145,8 @@ void setup()
     pinMode(swPin, INPUT_PULLUP);
     pinMode(a, OUTPUT);
 
-    lcdBrightness = map(EEPROM.read(0), 0, 255, 0, 255);
-    matrixBrightness = map(EEPROM.read(4), 0, 255, 0, 15);
+    lcdBrightness = max(min(EEPROM.read(0), 255), 0);
+    matrixBrightness = max(min(map(EEPROM.read(4), 0, 15, 0, 15), 255), 0);
 
     // the zero refers to the MAX7219 number, it is zero for 1 chip
     lc.shutdown(0, false); // turn off power saving, enables display
