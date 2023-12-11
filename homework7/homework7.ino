@@ -1,11 +1,12 @@
 #include "LedControl.h"
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 
 const int dinPin = 12;
 const int clockPin = 11;
 const int loadPin = 10;
-const int xPin = A0;
-const int yPin = A1;
+const int yPin = A0;
+const int xPin = A1;
 const int swPin = A2;
 const int seedPin = A3;
 
@@ -30,15 +31,46 @@ unsigned int menuOptionsLength = 3;
 unsigned int menuOptionIndex = 0;
 unsigned int settingsMenuOptionsLength = 3;
 unsigned int settingsMenuOptionIndex = 0;
+unsigned int textScrollAmount = 0;
 
 // Create an LedControl object to manage the LED matrix
 LedControl lc = LedControl(dinPin, clockPin, loadPin, 1); // DIN, CLK, LOAD, No. DRIVER
 
-byte matrixBrightness = 2; // Variable to set the brightness level of the matrix
 byte xPos = 0;
 byte yPos = 0;
 byte xLastPos = 0;
 byte yLastPos = 0;
+
+// Shapes to be displayed on the LCD
+byte fullRectangle[8] = {
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111};
+
+byte emptyRectangle[8] = {
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000};
+
+byte crown[8] = {
+    B00000,
+    B10101,
+    B10101,
+    B11111,
+    B11111,
+    B11111,
+    B00000,
+    B00000};
 
 // Thresholds
 const int minThreshold = 200;
@@ -48,8 +80,9 @@ const unsigned int blinkingDelay = 500;
 const unsigned int fastBlinkingDelay = 200;
 const unsigned int veryFastBlinkingDelay = 30;
 const unsigned int buttonHoldTime = 3000;
-const unsigned int resultDisplayTime = 5000;
 const unsigned int startDelay = 5000;
+const unsigned int lcdColumns = 16;
+const unsigned int lcdRows = 2;
 
 const unsigned int moveInterval = 125;   // Timing variable to control the speed of LED movement
 const unsigned int scrollInterval = 250; // Timing variable to control the speed of menu scrolling
@@ -61,6 +94,9 @@ bool started = false;
 bool finished = false;
 bool showMenu = true;
 bool settingsMenu = false;
+bool aboutChosen = false;
+bool lcdBrightnessChosen = false;
+bool matrixBrightnessChosen = false;
 
 byte matrix[matrixSize][matrixSize] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
@@ -97,8 +133,10 @@ unsigned long lastBlinkTime = 0;        // Tracks the last time the LED blinke
 unsigned long lastScrollUpdateTime = 0; // Tracks the last time the menu was scrolled
 unsigned long buttonHoldStartTime = 0;
 unsigned long finishedTime = 0;
+unsigned long startTime = 0;
 
-unsigned int lcdIntensity = 120;
+unsigned int lcdBrightness;
+unsigned int matrixBrightness;
 
 void setup()
 {
@@ -106,6 +144,9 @@ void setup()
 
     pinMode(swPin, INPUT_PULLUP);
     pinMode(a, OUTPUT);
+
+    lcdBrightness = map(EEPROM.read(0), 0, 255, 0, 255);
+    matrixBrightness = map(EEPROM.read(4), 0, 255, 0, 15);
 
     // the zero refers to the MAX7219 number, it is zero for 1 chip
     lc.shutdown(0, false); // turn off power saving, enables display
@@ -115,13 +156,16 @@ void setup()
     randomSeed(analogRead(seedPin));
 
     // set up the LCD's number of columns and rows:
-    lcd.begin(32, 2);
+    lcd.begin(lcdColumns, lcdRows);
+    lcd.createChar(0, emptyRectangle);
+    lcd.createChar(1, fullRectangle);
+    lcd.createChar(2, crown);
 
     lcd.setCursor(0, 0);
     lcd.print("Hello! Ready for");
     lcd.setCursor(0, 1);
     lcd.print("some bamboozle?");
-    analogWrite(a, lcdIntensity);
+    analogWrite(a, lcdBrightness);
     delay(5000);
     lcd.clear();
 }
@@ -141,12 +185,18 @@ void loop()
             generateDrawing();
             delay(startDelay);
             started = true;
+            startTime = millis();
             clearDrawing();
+            xPos = 0;
+            yPos = 0;
+            matrix[yPos][xPos] = 1;
+            lcd.clear();
         }
         else
         {
             if (!finished)
             {
+                displayStatus();
                 click();
                 move();
                 submitDrawing();
@@ -154,12 +204,21 @@ void loop()
             else
             {
                 showResult();
-                if (millis() - finishedTime >= resultDisplayTime)
-                {
-                    started = false;
-                    finished = false;
-                    clearDrawing();
-                }
+                swState = digitalRead(swPin);
+                if (swState && !swLastState)
+                    lastDebounceTime = millis();
+                if (millis() - lastDebounceTime > debounceDelay)
+                    if (swState != swDebounceState)
+                    {
+                        swDebounceState = swState;
+                        if (swDebounceState == LOW)
+                        {
+                            started = false;
+                            finished = false;
+                            showMenu = true;
+                            clearDrawing();
+                        }
+                    }
             }
         }
     }
@@ -167,6 +226,8 @@ void loop()
 
 void displayMenu()
 {
+    if (aboutChosen || lcdBrightnessChosen || matrixBrightnessChosen)
+        return;
     if (!settingsMenu)
     {
         lcd.setCursor(0, 0);
@@ -185,12 +246,14 @@ void displayMenu()
 
 void scrollThroughMenu()
 {
+    if (aboutChosen || lcdBrightnessChosen || matrixBrightnessChosen)
+        return;
     unsigned int currentTime = millis();
     if (currentTime - lastScrollUpdateTime >= scrollInterval)
     {
         lastScrollUpdateTime = currentTime;
-        unsigned int xRead = analogRead(xPin);
-        if (xRead < minThreshold)
+        unsigned int yRead = analogRead(yPin);
+        if (yRead < minThreshold)
         {
             if (!settingsMenu)
             {
@@ -203,7 +266,7 @@ void scrollThroughMenu()
                 settingsMenuOptionIndex %= settingsMenuOptionsLength;
             }
         }
-        else if (xRead > maxThreshold)
+        else if (yRead > maxThreshold)
         {
             if (!settingsMenu)
             {
@@ -222,6 +285,94 @@ void scrollThroughMenu()
 
 void chooseMenuOption()
 {
+    if (aboutChosen)
+        showAbout();
+    else if (lcdBrightnessChosen)
+        setLcdBrightness();
+    else if (matrixBrightnessChosen)
+        setMatrixBrightness();
+    else
+    {
+        swState = digitalRead(swPin);
+        if (swState && !swLastState)
+            lastDebounceTime = millis();
+        if (millis() - lastDebounceTime > debounceDelay)
+            if (swState != swDebounceState)
+            {
+                swDebounceState = swState;
+                if (swDebounceState == LOW)
+                {
+                    if (!settingsMenu)
+                    {
+                        switch (menuOptionIndex)
+                        {
+                        case 0:
+                            showMenu = false;
+                            break;
+                        case 1:
+                            settingsMenu = true;
+                            break;
+                        case 2:
+                            aboutChosen = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        switch (settingsMenuOptionIndex)
+                        {
+                        case 0:
+                            lcdBrightnessChosen = true;
+                            lcd.clear();
+                            break;
+                        case 1:
+                            matrixBrightnessChosen = true;
+                            lcd.clear();
+                            break;
+                        case 2:
+                            settingsMenu = false;
+                            break;
+                        }
+                    }
+                }
+            }
+    }
+}
+
+// Function to set the brightness of the LCD
+void setLcdBrightness()
+{
+    lcd.setCursor(0, 0);
+    lcd.print("DISPLAY: ");
+    lcd.setCursor(0, 1);
+    lcd.print("-");
+    for (int i = 0; i < lcdBrightness / lcdColumns; i++)
+        lcd.write(byte(1));
+    for (int i = lcdBrightness / lcdColumns; i < lcdColumns; i++)
+        lcd.write(byte(0));
+    lcd.setCursor(lcdColumns - 1, 1);
+    lcd.print("+");
+
+    unsigned int currentTime = millis();
+    if (currentTime - lastScrollUpdateTime >= scrollInterval)
+    {
+        lastScrollUpdateTime = currentTime;
+        unsigned int xRead = analogRead(xPin);
+        if (xRead < minThreshold)
+        {
+            lcdBrightness -= lcdColumns;
+            lcdBrightness = (lcdBrightness + 255) % 255;
+        }
+        else if (xRead > maxThreshold)
+        {
+            lcdBrightness += lcdColumns;
+            lcdBrightness %= 255;
+        }
+        analogWrite(a, lcdBrightness);
+        EEPROM.put(0, lcdBrightness);
+    }
+
+    // check if sw was pressed for exit
     swState = digitalRead(swPin);
     if (swState && !swLastState)
         lastDebounceTime = millis();
@@ -231,65 +382,109 @@ void chooseMenuOption()
             swDebounceState = swState;
             if (swDebounceState == LOW)
             {
-                if (!settingsMenu)
-                {
-                    switch (menuOptionIndex)
-                    {
-                    case 0:
-                        showMenu = false;
-                        break;
-                    case 1:
-                        settingsMenu = true;
-                        settings();
-                        break;
-                    case 2:
-                        showAbout();
-                        break;
-                    }
-                }
-                else
-                {
-                    switch (settingsMenuOptionIndex)
-                    {
-                    case 0:
-                        /* TODO */
-                        break;
-                    case 1:
-                        /* TODO */
-                        break;
-                    case 2:
-                        settingsMenu = false;
-                        break;
-                    }
-                }
+                lcdBrightnessChosen = false;
+                lcd.clear();
             }
         }
 }
 
-void settings()
+// Function to set the brightness of the LED matrix
+void setMatrixBrightness()
 {
-    /* TODO */
+    for (int i = 0; i < matrixSize; i++)
+        for (int j = 0; j < matrixSize; j++)
+            lc.setLed(0, i, j, 1);
+
+    lcd.setCursor(0, 0);
+    lcd.print("GAME: ");
+    lcd.setCursor(0, 1);
+    lcd.print("-");
+    for (int i = 0; i < matrixBrightness; i++)
+        lcd.write(byte(1));
+    for (int i = matrixBrightness; i < lcdColumns; i++)
+        lcd.write(byte(0));
+    lcd.setCursor(lcdColumns - 1, 1);
+    lcd.print("+");
+
+    unsigned int currentTime = millis();
+    if (currentTime - lastScrollUpdateTime >= scrollInterval)
+    {
+        lastScrollUpdateTime = currentTime;
+        unsigned int xRead = analogRead(xPin);
+        if (xRead < minThreshold)
+        {
+            matrixBrightness--;
+            matrixBrightness = (matrixBrightness + lcdColumns - 1) % (lcdColumns - 1);
+        }
+        else if (xRead > maxThreshold)
+        {
+            matrixBrightness++;
+            matrixBrightness %= lcdColumns - 1;
+        }
+        lc.setIntensity(0, matrixBrightness);
+        EEPROM.put(4, matrixBrightness);
+    }
+
+    swState = digitalRead(swPin);
+    if (swState && !swLastState)
+        lastDebounceTime = millis();
+    if (millis() - lastDebounceTime > debounceDelay)
+        if (swState != swDebounceState)
+        {
+            swDebounceState = swState;
+            if (swDebounceState == LOW)
+            {
+                matrixBrightnessChosen = false;
+                for (int i = 0; i < matrixSize; i++)
+                    for (int j = 0; j < matrixSize; j++)
+                        lc.setLed(0, i, j, 0);
+                lcd.clear();
+            }
+        }
 }
 
+// Function to display the about screen
 void showAbout()
 {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Made by: Gheorghe Robert-Mihai");
-    lcd.setCursor(0, 1);
-    lcd.print("GitHub: surtexx");
-    lcd.scrollDisplayRight();
-    for (int i = 0; i < 16; i++)
+    unsigned int currentTime = millis();
+    if (currentTime - lastScrollUpdateTime >= scrollInterval)
     {
-        lcd.scrollDisplayLeft();
-        delay(1000);
+        lastScrollUpdateTime = currentTime;
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Made by: Gheorghe Robert-Mihai");
+        lcd.setCursor(0, 1);
+        lcd.print("GitHub: surtexx");
+        for (int i = 0; i < textScrollAmount; i++)
+            lcd.scrollDisplayLeft();
+        textScrollAmount++;
     }
-    lcd.clear();
+
+    swState = digitalRead(swPin);
+    if (swState && !swLastState)
+        lastDebounceTime = millis();
+    if (millis() - lastDebounceTime > debounceDelay)
+        if (swState != swDebounceState)
+        {
+            swDebounceState = swState;
+            if (swDebounceState == LOW)
+            {
+                aboutChosen = false;
+                textScrollAmount = 0;
+                lcd.clear();
+            }
+        }
 }
 
 // Function to generate a random drawing
 void generateDrawing()
 {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Memorize this...");
+    lcd.setCursor(0, 1);
+    lcd.print("Quickly!!!");
+    lcd.print("");
     for (int i = 0; i < matrixSize; i++)
         for (int j = 0; j < matrixSize; j++)
         {
@@ -308,8 +503,21 @@ void clearDrawing()
             matrix[i][j] = 0;
             currentDrawing[i][j] = 0;
         }
-    matrix[xPos][yPos] = 1;
     updateMatrix();
+}
+
+void displayStatus()
+{
+    unsigned int minutes = (millis() - startTime) / 1000 / 60;
+    unsigned int seconds = (millis() - startTime) / 1000 % 60;
+    lcd.setCursor(0, 0);
+    lcd.print("Elapsed time");
+    lcd.setCursor(0, 1);
+    lcd.print(minutes);
+    lcd.print(":");
+    if (seconds < 10)
+        lcd.print("0");
+    lcd.print(seconds);
 }
 
 // Function to move the LED cursor around the matrix
@@ -322,11 +530,11 @@ void move()
 
         if (xPos != xLastPos || yPos != yLastPos)
         {
-            matrix[xLastPos][yLastPos] = currentDrawing[xLastPos][yLastPos];
+            matrix[yLastPos][xLastPos] = currentDrawing[yLastPos][xLastPos];
             matrixChanged = true;
             xLastPos = xPos;
             yLastPos = yPos;
-            matrix[xLastPos][yLastPos] = 1;
+            matrix[yLastPos][xLastPos] = 1;
         }
         blink();
         updatePositions();
@@ -345,7 +553,7 @@ void click()
             swDebounceState = swState;
             if (swDebounceState == LOW)
             {
-                currentDrawing[xPos][yPos] = !currentDrawing[xPos][yPos];
+                currentDrawing[yPos][xPos] = !currentDrawing[yPos][xPos];
                 updateMatrix();
             }
         }
@@ -361,7 +569,7 @@ void submitDrawing()
     {
         buttonHoldStartTime = 0;
         finished = true;
-        currentDrawing[xPos][yPos] = !currentDrawing[xPos][yPos];
+        currentDrawing[yPos][xPos] = !currentDrawing[yPos][xPos];
         finishedTime = millis();
     }
     else if (swState)
@@ -371,20 +579,62 @@ void submitDrawing()
 // Function to display the result of the game
 void showResult()
 {
+    unsigned int correctCells = 0;
+    unsigned int incorrectCells = 0;
+    unsigned int missedCells = 0;
     for (int i = 0; i < matrixSize; i++)
         for (int j = 0; j < matrixSize; j++)
             if (currentDrawing[i][j] && !hiddenDrawing[i][j])
+            {
                 lc.setLed(0, i, j, millis() / fastBlinkingDelay % 2); // blink fast for selecting a wrong cell
+                incorrectCells++;
+            }
             else if (!currentDrawing[i][j] && hiddenDrawing[i][j])
+            {
                 lc.setLed(0, i, j, millis() / veryFastBlinkingDelay % 2); // blink very fast for not selecting a correct cell
+                incorrectCells++;
+            }
             else
+            {
                 lc.setLed(0, i, j, currentDrawing[i][j]);
+                if (currentDrawing[i][j])
+                    correctCells++;
+            }
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Time: ");
+    unsigned int minutes = (finishedTime - startTime) / 1000 / 60;
+    unsigned int seconds = (finishedTime - startTime) / 1000 % 60;
+    lcd.print(minutes);
+    lcd.print(":");
+    if (seconds < 10)
+        lcd.print("0");
+    lcd.print(seconds);
+    lcd.setCursor(0, 1);
+    lcd.print("Accuracy: ");
+    float accuracy;
+    if (!correctCells)
+        accuracy = 0;
+    else
+        accuracy = (float)correctCells / (correctCells + incorrectCells) * 100;
+    if (accuracy == 100)
+    {
+        lcd.print(accuracy, 0);
+        lcd.print("%");
+        lcd.write(byte(2));
+    }
+    else
+    {
+        lcd.print(accuracy);
+        lcd.print("%");
+    }
 }
 
 // Function to blink the LED cursor
 void blink()
 {
-    lc.setLed(0, xPos, yPos, millis() / blinkingDelay % 2);
+    lc.setLed(0, yPos, xPos, millis() / blinkingDelay % 2);
 }
 
 // Function to update the LED matrix
@@ -407,23 +657,23 @@ void updatePositions()
 
     if (xRead < minThreshold)
     {
-        xPos++;
-        xPos %= matrixSize;
-    }
-    else if (xRead > maxThreshold)
-    {
         xPos--;
         xPos = (xPos + matrixSize) % matrixSize;
     }
-    if (yRead < minThreshold)
+    else if (xRead > maxThreshold)
     {
-        yPos--;
-        yPos = (yPos + matrixSize) % matrixSize;
+        xPos++;
+        xPos %= matrixSize;
     }
-    else if (yRead > maxThreshold)
+    if (yRead < minThreshold)
     {
         yPos++;
         yPos %= matrixSize;
+    }
+    else if (yRead > maxThreshold)
+    {
+        yPos--;
+        yPos = (yPos + matrixSize) % matrixSize;
     }
 
     if (matrixChanged)
