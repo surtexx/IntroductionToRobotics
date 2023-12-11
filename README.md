@@ -152,7 +152,7 @@ Develop a "Smart Environment Monitor and Logger". This system requires an intera
 ### Homework 6:
 <details>
 <summary></summary>
-  
+
 ### Components
 1. Joystick (1)
 2. 8x8 LED matrix (1)
@@ -172,5 +172,38 @@ Develop a small game on the 8x8 matrix. The game is a *Draw from mind* game. It 
 
 ### [Demo](https://www.youtube.com/watch?v=-e_HT-BigJk)
 ### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework6/homework6.ino)
+
+</details>
+
+### Homework 7:
+<details>
+<summary></summary>
+
+### Components
+1. Joystick (1)
+2. 8x8 LED matrix (1)
+3. MAX7219 driver (1)
+4. Capacitors (2)
+5. Potentiometer (1)
+6. Wires and Resistors
+
+### Task
+Continue the game from the previous homework. Add a greeting message, relevant info during the gameplay, a *game over* message and a menu to the game, with the following options:
+1. Start Game
+2. Settings
+    3.1 LCD Brightness - the user can control the brightness of the LCD using the joystick.
+    3.2 Matrix Brightness - the user can control the brightness of the matrix using the joystick.
+3. About- display some information about the developer.
+The potentioemeter will be used to control the contrast of the LCD.
+
+### Setup
+<details>
+<summary></summary>
+
+![Setup](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework7/setup7.jpg)
+</details>
+
+### [Demo](https://www.youtube.com/watch?v=qzo7-4ZWyVY)
+### [Source code](https://github.com/surtexx/IntroductionToRobotics/blob/main/homework7/homework7.ino)
 
 </details>
